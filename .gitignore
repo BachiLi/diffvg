@@ -1,0 +1,10 @@
+build
+apps/results
+apps/files
+apps/__pycache__
+compile_commands.json
+.vimrc
+diffvg.egg-info
+dist
+__pycache__
+.DS_Store
