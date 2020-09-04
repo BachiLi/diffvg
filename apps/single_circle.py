@@ -95,6 +95,7 @@ img = render(256,   # width
              2,     # num_samples_x
              2,     # num_samples_y
              102,    # seed
+             None,
              *scene_args)
 # Save the images and differences.
 pydiffvg.imwrite(img.cpu(), 'results/single_circle/final.png')
