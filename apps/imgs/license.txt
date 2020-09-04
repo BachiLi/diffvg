@@ -1,0 +1,12 @@
+baboon.png is from USC-SIPI dataset http://sipi.usc.edu/database/database.php?volume=misc
+boston.svg is from Ganacim et al. http://w3.impa.br/~diego/projects/GanEtAl14/
+contour.svg is from Ganacim et al. http://w3.impa.br/~diego/projects/GanEtAl14/
+eleven_below_single.svg is from NVprSDK https://developer.nvidia.com/gpu-accelerated-path-rendering
+fallingwater.jpg is from wikipedia user Daderot https://en.wikipedia.org/wiki/Fallingwater#/media/File:Fallingwater_-_DSC05639.JPG
+flower.jpg is from wikipedia user Eric Guinther https://en.wikipedia.org/wiki/Flower#/media/File:Crateva_religiosa.jpg
+hawaii.svg is from Ganacim et al. http://w3.impa.br/~diego/projects/GanEtAl14/
+hokusai.svg is from OpenClipart @ freesvg.org https://freesvg.org/great-wave-off-kanagawa
+mcseem2.svg is from NVprSDK https://developer.nvidia.com/gpu-accelerated-path-rendering
+peppers.tiff is from USC-SIPI dataset http://sipi.usc.edu/database/database.php?volume=misc
+reschart.svg is from Ganacim et al. http://w3.impa.br/~diego/projects/GanEtAl14/
+tiger.svg is from Ganacim et al. http://w3.impa.br/~diego/projects/GanEtAl14/
