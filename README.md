@@ -22,6 +22,7 @@ git submodule update --init --recursive
 conda install pytorch torchvision -c pytorch
 conda install numpy
 conda install scikit-image
+conda install -c anaconda cmake
 pip install svgwrite
 pip install svgpathtools
 pip install cssutils
