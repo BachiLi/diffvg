@@ -21,6 +21,7 @@ img = render(510, # width
              1,   # num_samples_x
              1,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 img = img / 510 # Normalize SDF to [0, 1]
 pydiffvg.imwrite(img.cpu(), 'results/single_path_sdf/target.png', gamma=1.0)
@@ -42,6 +43,7 @@ img = render(510, # width
              1,   # num_samples_x
              1,   # num_samples_y
              1,   # seed
+             None, # background_image
              *scene_args)
 img = img / 510 # Normalize SDF to [0, 1]
 pydiffvg.imwrite(img.cpu(), 'results/single_path_sdf/init.png', gamma=1.0)
@@ -63,6 +65,7 @@ for t in range(100):
                  1,     # num_samples_x
                  1,     # num_samples_y
                  t+1,   # seed
+                 None, # background_image
                  *scene_args)
     img = img / 510 # Normalize SDF to [0, 1]
     # Save the intermediate render.
@@ -94,6 +97,7 @@ img = render(510,   # width
              1,     # num_samples_x
              1,     # num_samples_y
              102,    # seed
+             None, # background_image
              *scene_args)
 # Save the images and differences.
 pydiffvg.imwrite(img.cpu(), 'results/single_path_sdf/final.png')

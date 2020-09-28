@@ -1028,6 +1028,7 @@ class OptimizableSvg:
                      2,  # num_samples_x
                      2,  # num_samples_y
                      seed,  # seed
+                     None, # background_image
                      *scene_args)
         return img
 

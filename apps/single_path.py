@@ -20,6 +20,7 @@ img = render(510, # width
              2,   # num_samples_x
              2,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 # The output image is in linear RGB space. Do Gamma correction before saving the image.
 pydiffvg.imwrite(img.cpu(), 'results/single_path/target.png', gamma=2.2)
@@ -40,6 +41,7 @@ img = render(510, # width
              2,   # num_samples_x
              2,   # num_samples_y
              1,   # seed
+             None, # background_image
              *scene_args)
 pydiffvg.imwrite(img.cpu(), 'results/single_path/init.png', gamma=2.2)
 
@@ -59,6 +61,7 @@ for t in range(100):
                  2,     # num_samples_x
                  2,     # num_samples_y
                  t+1,   # seed
+                 None, # background_image
                  *scene_args)
     # Save the intermediate render.
     pydiffvg.imwrite(img.cpu(), 'results/single_path/iter_{:02}.png'.format(t), gamma=2.2)
@@ -88,6 +91,7 @@ img = render(510,   # width
              2,     # num_samples_x
              2,     # num_samples_y
              102,    # seed
+             None, # background_image
              *scene_args)
 # Save the images and differences.
 pydiffvg.imwrite(img.cpu(), 'results/single_path/final.png')
