@@ -24,6 +24,7 @@ img = render(256, # width
              2,   # num_samples_x
              2,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 img = img / 256 # Normalize SDF to [0, 1]
 pydiffvg.imwrite(img.cpu(), 'results/test_eval_positions/target.png')
@@ -45,6 +46,7 @@ img = render(256, # width
              2,   # num_samples_x
              2,   # num_samples_y
              1,   # seed
+             None, # background_image
              *scene_args)
 img = img / 256 # Normalize SDF to [0, 1]
 pydiffvg.imwrite(img.cpu(), 'results/test_eval_positions/init.png')
@@ -60,7 +62,7 @@ for t in range(200):
     circle.center = center_n * 256
     circle_group.fill_color = color
     # Evaluate 1000 positions
-    eval_positions = torch.rand(1000, 2) * 256
+    eval_positions = torch.rand(1000, 2).to(img.device) * 256
     # for grid_sample()
     grid_eval_positions = (eval_positions / 256.0) * 2.0 - 1.0
     scene_args = pydiffvg.RenderFunction.serialize_scene(\
@@ -72,6 +74,7 @@ for t in range(200):
                      0,     # num_samples_x
                      0,     # num_samples_y
                      t+1,   # seed
+                     None, # background_image
                      *scene_args)
     samples = samples / 256 # Normalize SDF to [0, 1]
     target_sampled = torch.nn.functional.grid_sample(\
@@ -103,6 +106,7 @@ img = render(256,   # width
              2,     # num_samples_x
              2,     # num_samples_y
              102,    # seed
+             None, # background_image
              *scene_args)
 img = img / 256 # Normalize SDF to [0, 1]
 # Save the images and differences.

@@ -34,6 +34,7 @@ img = render(256, # width
              1,   # num_samples_x
              1,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 img /= 256.0
 # The output image is in linear RGB space. Do Gamma correction before saving the image.
@@ -63,6 +64,7 @@ img = render(256, # width
              1,   # num_samples_x
              1,   # num_samples_y
              1,   # seed
+             None, # background_image
              *scene_args)
 img /= 256.0
 pydiffvg.imwrite(img.cpu(), 'results/single_curve_sdf/init.png', gamma=1.0)
@@ -84,6 +86,7 @@ for t in range(100):
                  1,     # num_samples_x
                  1,     # num_samples_y
                  t+1,   # seed
+                 None, # background_image
                  *scene_args)
     img /= 256.0
     # Save the intermediate render.
@@ -113,6 +116,7 @@ img = render(256,   # width
              1,     # num_samples_x
              1,     # num_samples_y
              102,    # seed
+             None, # background_image
              *scene_args)
 img /= 256.0
 # Save the images and differences.

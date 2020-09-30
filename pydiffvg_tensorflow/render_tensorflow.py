@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import diffvg
 import pydiffvg_tensorflow as pydiffvg
@@ -457,7 +458,7 @@ def render(*x):
         The main TensorFlow interface of C++ diffvg.
     """
     assert(tf.executing_eagerly())
-    if pydiffvg.get_use_gpu() and os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] != 'true':
+    if pydiffvg.get_use_gpu() and os.environ.get('TF_FORCE_GPU_ALLOW_GROWTH') != 'true':
         print('******************** WARNING ********************')
         print('Tensorflow by default allocates all GPU memory,')
         print('causing huge amount of page faults when rendering.')

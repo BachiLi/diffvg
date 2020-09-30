@@ -40,6 +40,7 @@ img = render(256, # width
              1,   # num_samples_x
              1,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 
 path.points[:, 1] += 1e-3
@@ -51,6 +52,7 @@ img2 = render(256, # width
               1,   # num_samples_x
               1,   # num_samples_y
               0,   # seed
+              None, # background_image
               *scene_args)
 
 # diff = img2 - img
@@ -70,6 +72,7 @@ img = render_grad(torch.ones(256, 256, 1), # grad_img
                   1,   # num_samples_x
                   1,   # num_samples_y
                   0,   # seed
+                  None, # background_image
                   *scene_args)
 img = img[:, :, 0]
 import matplotlib.pyplot as plt
@@ -109,6 +112,7 @@ plt.show()
 #              1,   # num_samples_x
 #              1,   # num_samples_y
 #              1,   # seed
+#              None, # background_image
 #              *scene_args)
 # img /= 256.0
 # pydiffvg.imwrite(img.cpu(), 'results/single_curve_sdf/init.png', gamma=1.0)
@@ -130,6 +134,7 @@ plt.show()
 #                  1,     # num_samples_x
 #                  1,     # num_samples_y
 #                  t+1,   # seed
+#                  None, # background_image
 #                  *scene_args)
 #     img /= 256.0
 #     # Save the intermediate render.
@@ -160,6 +165,7 @@ plt.show()
 #              1,     # num_samples_x
 #              1,     # num_samples_y
 #              102,    # seed
+#              None, # background_image
 #              *scene_args)
 # img /= 256.0
 # # Save the images and differences.

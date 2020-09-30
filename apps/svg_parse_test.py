@@ -21,9 +21,9 @@ for x in range(100000):
         print(outmat)
         print(decomp)"""
 
-#infile='../../data/test_data/linear_grad_alpha_aspaths.svg'
-#infile='../../data/note_small.svg'
-infile='linux.svg'
+
+infile='./imgs/note_small.svg'
+
 
 canvas_width, canvas_height, shapes, shape_groups = \
 	pydiffvg.svg_to_scene(infile)
@@ -35,6 +35,7 @@ img = render(canvas_width, # width
              2,   # num_samples_x
              2,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 # The output image is in linear RGB space. Do Gamma correction before saving the image.
 pydiffvg.imwrite(img.cpu(), 'test_old.png', gamma=1.0)
@@ -50,6 +51,7 @@ img = render(scene[0], # width
              2,   # num_samples_x
              2,   # num_samples_y
              0,   # seed
+             None, # background_image
              *scene_args)
 
 
