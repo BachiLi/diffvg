@@ -423,6 +423,7 @@ def forward(width,
 
         start = time.time()
         diffvg.render(scene,
+                      diffvg.float_ptr(0), # background image
                       diffvg.float_ptr(pydiffvg.data_ptr(rendered_image) if output_type == OutputType.color else 0),
                       diffvg.float_ptr(pydiffvg.data_ptr(rendered_image) if output_type == OutputType.sdf else 0),
                       width,
@@ -430,10 +431,13 @@ def forward(width,
                       int(num_samples_x),
                       int(num_samples_y),
                       seed,
+                      diffvg.float_ptr(0), # d_background_image
                       diffvg.float_ptr(0), # d_render_image
                       diffvg.float_ptr(0), # d_render_sdf
                       diffvg.float_ptr(0), # d_translation
-                      use_prefiltering)
+                      use_prefiltering,
+                      diffvg.float_ptr(0), # eval_positions
+                      0 ) # num_eval_positions (automatically set to entire raster)
         time_elapsed = time.time() - start
         if print_timing:
             print('Forward pass, time: %.5f s' % time_elapsed)
@@ -487,6 +491,7 @@ def render(*x):
         start = time.time()
         with tf.device(pydiffvg.get_device_name()):
             diffvg.render(scene,
+                          diffvg.float_ptr(0), # background_image
                           diffvg.float_ptr(0), # render_image
                           diffvg.float_ptr(0), # render_sdf
                           width,
@@ -494,10 +499,13 @@ def render(*x):
                           num_samples_x,
                           num_samples_y,
                           seed,
+                          diffvg.float_ptr(0), # d_background_image
                           diffvg.float_ptr(pydiffvg.data_ptr(grad_img) if output_type == OutputType.color else 0),
                           diffvg.float_ptr(pydiffvg.data_ptr(grad_img) if output_type == OutputType.sdf else 0),
                           diffvg.float_ptr(0), # d_translation
-                          use_prefiltering)
+                          use_prefiltering,
+                          diffvg.float_ptr(0), # eval_positions
+                          0 ) # num_eval_positions (automatically set to entire raster))
         time_elapsed = time.time() - start
         global print_timing
         if print_timing:
