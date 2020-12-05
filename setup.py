@@ -53,6 +53,8 @@ class Build(build_ext):
 
             if ext.build_with_cuda:
                 cmake_args += ['-DDIFFVG_CUDA=1']
+            else:
+                cmake_args += ['-DDIFFVG_CUDA=0']
 
             env = os.environ.copy()
             env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
