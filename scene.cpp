@@ -811,7 +811,7 @@ size_t allocate_buffers(Scene &scene,
                 } case ColorType::LinearGradient: {
                     if (alloc_mode) scene.shape_groups[group_id].fill_color = (LinearGradient*)&scene.buffer[buffer_size];
                     buffer_size += align(sizeof(LinearGradient)); // color
-                    if (alloc_mode) scene.shape_groups[group_id].fill_color = (LinearGradient*)&scene.buffer[buffer_size];
+                    if (alloc_mode) scene.d_shape_groups[group_id].fill_color = (LinearGradient*)&scene.buffer[buffer_size];
                     buffer_size += align(sizeof(LinearGradient)); // d_color
 
                     const LinearGradient *c_ = (const LinearGradient *)shape_group->fill_color;
@@ -830,7 +830,7 @@ size_t allocate_buffers(Scene &scene,
                 } case ColorType::RadialGradient: {
                     if (alloc_mode) scene.shape_groups[group_id].fill_color = (RadialGradient*)&scene.buffer[buffer_size];
                     buffer_size += align(sizeof(RadialGradient)); // color
-                    if (alloc_mode) scene.shape_groups[group_id].fill_color = (RadialGradient*)&scene.buffer[buffer_size];
+                    if (alloc_mode) scene.d_shape_groups[group_id].fill_color = (RadialGradient*)&scene.buffer[buffer_size];
                     buffer_size += align(sizeof(RadialGradient)); // d_color
 
                     const RadialGradient *c_ = (const RadialGradient *)shape_group->fill_color;
