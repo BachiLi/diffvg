@@ -85,7 +85,6 @@ for t in range(100):
     pydiffvg.imwrite(img, 'results/single_curve_tf/iter_{}.png'.format(t))
 
     grads = tape.gradient(loss_value, [points_n, color])
-    #grads = tape.gradient(loss_value, [points_n])
     print(grads)
     optimizer.apply_gradients(zip(grads, [points_n, color]))
 
