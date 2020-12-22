@@ -90,7 +90,7 @@ for t in range(100):
 
 # Render the final result.
 path.points = points_n * 256
-path_group.fill_color = color
+path_group.stroke_color = stroke_color
 scene_args = pydiffvg.serialize_scene(\
     canvas_width, canvas_height, shapes, shape_groups)
 img = render(tf.constant(256), # width
