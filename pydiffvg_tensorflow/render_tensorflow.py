@@ -133,7 +133,7 @@ def serialize_scene(canvas_width,
             elif isinstance(shape, pydiffvg.Path):
                 assert(shape.points.shape[1] == 2)
                 args.append(ShapeType.asTensor(diffvg.ShapeType.path))
-                args.append(tf.identity(shape.num_control_points, type=tf.int32))
+                args.append(tf.identity(shape.num_control_points))
                 args.append(tf.identity(shape.points))
                 args.append(tf.constant(shape.is_closed))
             elif isinstance(shape, pydiffvg.Polygon):
