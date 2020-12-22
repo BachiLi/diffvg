@@ -262,9 +262,11 @@ def forward(width,
                 current_index += 1
                 shape = diffvg.Path(diffvg.int_ptr(pydiffvg.data_ptr(num_control_points)),
                                     diffvg.float_ptr(pydiffvg.data_ptr(points)),
+                                    diffvg.float_ptr(0), # thickness
                                     num_control_points.shape[0],
                                     points.shape[0],
-                                    is_closed)
+                                    is_closed,
+                                    tf.constant(False)) # use_distance_approx
             elif shape_type == diffvg.ShapeType.rect:
                 p_min = args[current_index]
                 current_index += 1
@@ -545,7 +547,7 @@ def render(*x):
                 elif d_shape.type == diffvg.ShapeType.path:
                     d_path = d_shape.as_path()
                     points = tf.zeros((d_path.num_points, 2), dtype=tf.float32)
-                    d_path.copy_to(diffvg.float_ptr(points.data_ptr()))
+                    d_path.copy_to(diffvg.float_ptr(pydiffvg.data_ptr(points)),diffvg.float_ptr(0))
                     d_args.append(None) # num_control_points
                     d_args.append(points)
                     d_args.append(None) # is_closed
