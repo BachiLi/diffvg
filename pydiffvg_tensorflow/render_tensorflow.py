@@ -136,6 +136,7 @@ def serialize_scene(canvas_width,
                 args.append(tf.identity(shape.num_control_points))
                 args.append(tf.identity(shape.points))
                 args.append(tf.constant(shape.is_closed))
+                args.append(tf.constant(shape.use_distance_approx))
             elif isinstance(shape, pydiffvg.Polygon):
                 assert(shape.points.shape[1] == 2)
                 args.append(ShapeType.asTensor(diffvg.ShapeType.path))
@@ -260,13 +261,15 @@ def forward(width,
                 current_index += 1
                 is_closed = args[current_index]
                 current_index += 1
+                use_distance_approx = args[current_index]
+                current_index += 1
                 shape = diffvg.Path(diffvg.int_ptr(pydiffvg.data_ptr(num_control_points)),
                                     diffvg.float_ptr(pydiffvg.data_ptr(points)),
                                     diffvg.float_ptr(0), # thickness
                                     num_control_points.shape[0],
                                     points.shape[0],
                                     is_closed,
-                                    tf.constant(False)) # use_distance_approx
+                                    use_distance_approx)
             elif shape_type == diffvg.ShapeType.rect:
                 p_min = args[current_index]
                 current_index += 1
@@ -551,6 +554,7 @@ def render(*x):
                     d_args.append(None) # num_control_points
                     d_args.append(points)
                     d_args.append(None) # is_closed
+                    d_args.append(None) # use_distance_approx
                 elif d_shape.type == diffvg.ShapeType.rect:
                     d_rect = d_shape.as_rect()
                     p_min = tf.constant((d_rect.p_min.x, d_rect.p_min.y))
