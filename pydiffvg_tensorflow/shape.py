@@ -16,12 +16,13 @@ class Ellipse:
         self.id = id
 
 class Path:
-    def __init__(self, num_control_points, points, is_closed, stroke_width = tf.constant(1.0), id = ''):
+    def __init__(self, num_control_points, points, is_closed, stroke_width = tf.constant(1.0), id = '', use_distance_approx = False):
         self.num_control_points = num_control_points
         self.points = points
         self.is_closed = is_closed
         self.stroke_width = stroke_width
         self.id = id
+        self.use_distance_approx = use_distance_approx
 
 class Polygon:
     def __init__(self, points, is_closed, stroke_width = tf.constant(1.0), id = ''):
