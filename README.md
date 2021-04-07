@@ -32,6 +32,42 @@ pip install torch-tools
 pip install visdom
 python setup.py install
 ```
+# Install using poetry
+
+## prerequisite
+install python 3.7, poetry and ffmpeg
+
+```
+# install poetry (mac, linux)
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+
+# install ffmpeg
+
+(macos)
+brew install ffmpeg
+
+(linux)
+sudo apt install ffmpeg
+
+or use conda
+conda install -y -c conda-forge ffmpeg
+```
+
+## Install python packages
+
+```
+# install all python dependencies
+poetry install
+
+# install pydiffvg
+poetry run python setup.py install
+```
+
+Now to run the apps, just add `poetry run` before each of the commands below, e.g.
+
+```
+poetry run python single_circle.py
+```
 
 # Building in debug mode
 
