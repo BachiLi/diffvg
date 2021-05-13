@@ -10,6 +10,7 @@ import re
 import warnings
 import cssutils
 import logging
+import matplotlib.colors 
 cssutils.log.setLevel(logging.ERROR)
 
 def remove_namespaces(s):
@@ -70,7 +71,11 @@ def parse_color(s, defs):
     elif s == 'none':
         return None
     else:
-        warnings.warn('Unknown color command ' + s)
+        try : 
+            rgba = matplotlib.colors.to_rgba(s)
+            color = torch.tensor(rgba)
+        except ValueError : 
+            warnings.warn('Unknown color command ' + s)
     return color
 
 # https://github.com/mathandy/svgpathtools/blob/7ebc56a831357379ff22216bec07e2c12e8c5bc6/svgpathtools/parser.py
