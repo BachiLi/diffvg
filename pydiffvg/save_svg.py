@@ -117,10 +117,10 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
             shape_node.set('d', path_str)
         elif isinstance(shape, pydiffvg.Rect):
             shape_node = etree.SubElement(g, 'rect')
-            shape_node.set('x', shape.p_min[0].item())
-            shape_node.set('y', shape.p_min[1].item())
-            shape_node.set('width', shape.p_max[0].item() - shape.p_min[0].item())
-            shape_node.set('height', shape.p_max[1].item() - shape.p_min[1].item())
+            shape_node.set('x', str(shape.p_min[0].item()))
+            shape_node.set('y', str(shape.p_min[1].item()))
+            shape_node.set('width', str(shape.p_max[0].item() - shape.p_min[0].item()))
+            shape_node.set('height', str(shape.p_max[1].item() - shape.p_min[1].item()))
         else:
             assert(False)
 
