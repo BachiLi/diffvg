@@ -75,9 +75,9 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
         shape = shapes[shape_group.shape_ids[0]]
         if isinstance(shape, pydiffvg.Circle):
             shape_node = etree.SubElement(g, 'circle')
-            shape_node.set('r', shape.radius.item())
-            shape_node.set('cx', shape.center[0].item())
-            shape_node.set('cy', shape.center[1].item())
+            shape_node.set('r', str(shape.radius.item()))
+            shape_node.set('cx', str(shape.center[0].item()))
+            shape_node.set('cy', str(shape.center[1].item()))
         elif isinstance(shape, pydiffvg.Polygon):
             shape_node = etree.SubElement(g, 'polygon')
             points = shape.points.data.cpu().numpy()
