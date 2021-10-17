@@ -60,7 +60,7 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
                 stop_colors = lg.stop_colors.data.cpu().numpy()
                 for j in range(offsets.shape[0]):
                     stop = etree.SubElement(color, 'stop')
-                    stop.set('offset', offsets[j])
+                    stop.set('offset', str(offsets[j]))
                     c = lg.stop_colors[j, :]
                     stop.set('stop-color', 'rgb({}, {}, {})'.format(\
                         int(255 * c[0]), int(255 * c[1]), int(255 * c[2])))
@@ -75,9 +75,9 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
         shape = shapes[shape_group.shape_ids[0]]
         if isinstance(shape, pydiffvg.Circle):
             shape_node = etree.SubElement(g, 'circle')
-            shape_node.set('r', shape.radius.item())
-            shape_node.set('cx', shape.center[0].item())
-            shape_node.set('cy', shape.center[1].item())
+            shape_node.set('r', str(shape.radius.item()))
+            shape_node.set('cx', str(shape.center[0].item()))
+            shape_node.set('cy', str(shape.center[1].item()))
         elif isinstance(shape, pydiffvg.Polygon):
             shape_node = etree.SubElement(g, 'polygon')
             points = shape.points.data.cpu().numpy()
@@ -117,10 +117,10 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
             shape_node.set('d', path_str)
         elif isinstance(shape, pydiffvg.Rect):
             shape_node = etree.SubElement(g, 'rect')
-            shape_node.set('x', shape.p_min[0].item())
-            shape_node.set('y', shape.p_min[1].item())
-            shape_node.set('width', shape.p_max[0].item() - shape.p_min[0].item())
-            shape_node.set('height', shape.p_max[1].item() - shape.p_min[1].item())
+            shape_node.set('x', str(shape.p_min[0].item()))
+            shape_node.set('y', str(shape.p_min[1].item()))
+            shape_node.set('width', str(shape.p_max[0].item() - shape.p_min[0].item()))
+            shape_node.set('height', str(shape.p_max[1].item() - shape.p_min[1].item()))
         else:
             assert(False)
 
