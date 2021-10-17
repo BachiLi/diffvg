@@ -60,7 +60,7 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
                 stop_colors = lg.stop_colors.data.cpu().numpy()
                 for j in range(offsets.shape[0]):
                     stop = etree.SubElement(color, 'stop')
-                    stop.set('offset', offsets[j])
+                    stop.set('offset', str(offsets[j]))
                     c = lg.stop_colors[j, :]
                     stop.set('stop-color', 'rgb({}, {}, {})'.format(\
                         int(255 * c[0]), int(255 * c[1]), int(255 * c[2])))
