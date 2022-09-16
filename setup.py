@@ -75,7 +75,8 @@ if torch_spec is not None:
     import torch
     if torch.cuda.is_available():
         build_with_cuda = True
-if tf_spec is not None and sys.platform != 'win32':
+if False: #tf_spec is not None and sys.platform != 'win32':
+    assert(False)
     packages.append('pydiffvg_tensorflow')
     if not build_with_cuda:
         import tensorflow as tf
