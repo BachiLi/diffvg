@@ -635,7 +635,20 @@ void compute_bounding_boxes(Scene &scene,
         BVHNode *nodes = scene.shape_groups_bvh_nodes[shape_group_id];
         for (int i = 0; i < shape_group->num_shapes; i++) {
             auto shape_id = shape_group->shape_ids[i];
-            auto r = shape_group->stroke_color == nullptr ? 0 : shape_list[shape_id]->stroke_width;
+						float r = 0;
+						if (shape_group->stroke_color != nullptr){
+							if (shape_list[shape_id]->type == ShapeType::Path){
+								const Path *p = (const Path*)(shape_list[shape_id]->ptr);
+								if (p->thickness != nullptr){
+									for (int i = 0; i < p->num_base_points; i++)
+										r = max(r, p->thickness[i]);
+								}else
+									r = shape_list[shape_id]->stroke_width;
+							}else{
+								r = shape_list[shape_id]->stroke_width;
+							}
+						}
+            //auto r = shape_group->stroke_color == nullptr ? 0 : shape_list[shape_id]->stroke_width;
             nodes[i] = BVHNode{shape_id,
                                -1,
                                scene.shapes_bbox[shape_id],
