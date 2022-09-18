@@ -640,8 +640,8 @@ void compute_bounding_boxes(Scene &scene,
 							if (shape_list[shape_id]->type == ShapeType::Path){
 								const Path *p = (const Path*)(shape_list[shape_id]->ptr);
 								if (p->thickness != nullptr){
-									for (int i = 0; i < p->num_base_points; i++)
-										r = max(r, p->thickness[i]);
+									for (int i = 0; i < p->num_points; i++)
+										r = std::max(r, p->thickness[i]);
 								}else
 									r = shape_list[shape_id]->stroke_width;
 							}else{
@@ -665,7 +665,9 @@ void compute_bounding_boxes(Scene &scene,
             const Path *p = (const Path*)(shape_list[shape_group->shape_ids[0]]->ptr);
             if (p->thickness != nullptr) {
                 const BVHNode *nodes = scene.path_bvhs[shape_group->shape_ids[0]];
-                max_radius = nodes[0].max_radius;
+								for (int i = 0; i < p->num_points; i++)
+										max_radius = std::max(max_radius, p->thickness[i]);
+                //max_radius = std::max(nodes[0].max_radius, max_radius);
             }
         }
         for (int i = 1; i < shape_group->num_shapes; i++) {
