@@ -179,6 +179,7 @@ class RenderFunction(torch.autograd.Function):
                 num_samples_y,
                 seed,
                 background_image,
+                backward_clamp_gradient,
                 *args):
         """
             Forward rendering pass.
@@ -427,6 +428,7 @@ class RenderFunction(torch.autograd.Function):
         ctx.output_type = output_type
         ctx.use_prefiltering = use_prefiltering
         ctx.eval_positions = eval_positions
+        ctx.backward_clamp_gradient = backward_clamp_gradient
         return rendered_image
 
     @staticmethod
@@ -684,6 +686,28 @@ class RenderFunction(torch.autograd.Function):
         use_prefiltering = ctx.use_prefiltering
         eval_positions = ctx.eval_positions
         background_image = ctx.background_image
+        backward_clamp_gradient = ctx.backward_clamp_gradient
+
+        if backward_clamp_gradient is None:
+            assert torch.isfinite(grad_img).all()
+        else:
+            try:
+                assert torch.isfinite(grad_img).all()
+            except:
+                if type(backward_clamp_gradient) is int:
+                    backward_clamp_gradient_ = {"max": backward_clamp_gradient}
+                elif len(backward_clamp_gradient) == 1:
+                    backward_clamp_gradient_ = {"max": backward_clamp_gradient[0]}
+                elif len(backward_clamp_gradient) >= 2:
+                    backward_clamp_gradient_ = {
+                        "min": backward_clamp_gradient[0],
+                        "max": backward_clamp_gradient[1],
+                    }
+                if len(backward_clamp_gradient) >= 3 and backward_clamp_gradient[2]:
+                    print(
+                        f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to {backward_clamp_gradient_}'
+                    )
+                grad_img = torch.clamp(grad_img, **backward_clamp_gradient_)
 
         if background_image is not None:
             d_background_image = torch.zeros_like(background_image)

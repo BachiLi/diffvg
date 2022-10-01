@@ -50,13 +50,14 @@ def _onehot(label):
 def render(canvas_width, canvas_height, shapes, shape_groups, samples=2):
     _render = pydiffvg.RenderFunction.apply
     scene_args = pydiffvg.RenderFunction.serialize_scene(
-        canvas_width, canvas_height, shapes, shape_groups)
+        canvas_width, canvas_height, shapes, shape_groups, backward_clamp_gradient=None)
     img = _render(canvas_width,
                   canvas_height,
                   samples,
                   samples,
                   0,
                   None,
+                  backward_clamp_gradient,
                   *scene_args)
     return img
 

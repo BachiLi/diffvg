@@ -36,13 +36,14 @@ def texture_syn(img_path):
 def render(canvas_width, canvas_height, shapes, shape_groups, samples=2):
     _render = pydiffvg.RenderFunction.apply
     scene_args = pydiffvg.RenderFunction.serialize_scene(\
-        canvas_width, canvas_height, shapes, shape_groups)
+        canvas_width, canvas_height, shapes, shape_groups, backward_clamp_gradient=None)
     img = _render(canvas_width, # width
                  canvas_height, # height
                  samples,   # num_samples_x
                  samples,   # num_samples_y
                  0,   # seed
                  None,
+                 backward_clamp_gradient,
                  *scene_args)
     return img
 

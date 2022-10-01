@@ -35,7 +35,7 @@ def checkerboard(shape, square_size=2):
     res=bin*np.array([[[1., 1., 1.,]]])+(1-bin)*np.array([[[.75, .75, .75,]]])
     return torch.tensor(res,requires_grad=False,dtype=torch.float32)
 
-def render(optim, viewport):
+def render(optim, viewport, backward_clamp_gradient=None):
     scene_args = pydiffvg.RenderFunction.serialize_scene(*optim.build_scene())
     render = pydiffvg.RenderFunction.apply
     img = render(viewport[0],  # width
@@ -44,6 +44,7 @@ def render(optim, viewport):
                  2,  # num_samples_y
                  0,  # seed
                  None,
+                 backward_clamp_gradient,
                  *scene_args)
     return img
 
