@@ -81,7 +81,7 @@ class RenderFunction(torch.autograd.Function):
                 else:
                     args.append(torch.zeros(shape.points.shape[0] - 1, dtype = torch.int32))
                 args.append(shape.points.cpu())
-                args.append(None)  
+                args.append(None)
                 args.append(shape.is_closed)
                 args.append(False) # use_distance_approx
             elif isinstance(shape, pydiffvg.Rect):
@@ -376,7 +376,7 @@ class RenderFunction(torch.autograd.Function):
             assert(eval_positions.shape[0] == 0)
             rendered_image = torch.zeros(height, width, 4, device = pydiffvg.get_device())
         else:
-            assert(output_type == OutputType.sdf)          
+            assert(output_type == OutputType.sdf)
             if eval_positions.shape[0] == 0:
                 rendered_image = torch.zeros(height, width, 1, device = pydiffvg.get_device())
             else:
@@ -459,7 +459,7 @@ class RenderFunction(torch.autograd.Function):
         use_prefiltering = args[current_index]
         current_index += 1
         eval_positions = args[current_index]
-        current_index += 1        
+        current_index += 1
         shapes = []
         shape_groups = []
         shape_contents = [] # Important to avoid GC deleting the shapes
@@ -709,11 +709,11 @@ class RenderFunction(torch.autograd.Function):
                 elif len(backward_clamp_gradient_mag) >= 2:
                     min_: -float(abs(backward_clamp_gradient_mag[0]))
                     max_: +float(abs(backward_clamp_gradient_mag[1]))
+                    if len(backward_clamp_gradient_mag) >= 3 and backward_clamp_gradient_mag[2]:
+                        print(
+                            f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to: {min_}/{max_}')
+                        )
                 backward_clamp_gradient_mag = {"min": min_, "max": max_}
-                if len(backward_clamp_gradient_mag) >= 3 and backward_clamp_gradient_mag[2]:
-                    print(
-                        f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to {backward_clamp_gradient_mag}'
-                    )
                 grad_img = torch.clamp(grad_img, **backward_clamp_gradient_mag)
 
         if background_image is not None:
