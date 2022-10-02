@@ -15,7 +15,7 @@ def render(canvas_width, canvas_height, shapes, shape_groups, backward_clamp_gra
                  2,   # num_samples_x
                  2,   # num_samples_y
                  0,   # seed
-                 None,
+                 None, # background_image
                  backward_clamp_gradient_mag,
                  *scene_args)
     return img

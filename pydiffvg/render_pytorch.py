@@ -750,6 +750,7 @@ class RenderFunction(torch.autograd.Function):
         d_args.append(None) # num_samples_y
         d_args.append(None) # seed
         d_args.append(d_background_image)
+        d_args.append(None) # backward_clamp_gradient_mag
         d_args.append(None) # canvas_width
         d_args.append(None) # canvas_height
         d_args.append(None) # num_shapes

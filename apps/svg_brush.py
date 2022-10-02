@@ -43,7 +43,7 @@ def render(optim, viewport, backward_clamp_gradient_mag=None):
                  2,  # num_samples_x
                  2,  # num_samples_y
                  0,  # seed
-                 None,
+                 None, # background_image
                  backward_clamp_gradient_mag,
                  *scene_args)
     return img
