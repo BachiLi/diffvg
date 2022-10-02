@@ -6,7 +6,7 @@ import torch as th
 import scipy.ndimage.filters as F
 
 
-def render(canvas_width, canvas_height, shapes, shape_groups, backward_clamp_gradient=None):
+def render(canvas_width, canvas_height, shapes, shape_groups, backward_clamp_gradient_mag=None):
     _render = pydiffvg.RenderFunction.apply
     scene_args = pydiffvg.RenderFunction.serialize_scene(\
         canvas_width, canvas_height, shapes, shape_groups)
@@ -16,7 +16,7 @@ def render(canvas_width, canvas_height, shapes, shape_groups, backward_clamp_gra
                  2,   # num_samples_y
                  0,   # seed
                  None,
-                 backward_clamp_gradient,
+                 backward_clamp_gradient_mag,
                  *scene_args)
     return img
 
