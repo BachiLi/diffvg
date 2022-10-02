@@ -710,9 +710,7 @@ class RenderFunction(torch.autograd.Function):
                     min_: -float(abs(backward_clamp_gradient_mag[0]))
                     max_: +float(abs(backward_clamp_gradient_mag[1]))
                     if len(backward_clamp_gradient_mag) >= 3 and backward_clamp_gradient_mag[2]:
-                        print(
-                            f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to: {min_}/{max_}')
-                        )
+                        print(f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to: {min_}/{max_}')
                 backward_clamp_gradient_mag = {"min": min_, "max": max_}
                 grad_img = torch.clamp(grad_img, **backward_clamp_gradient_mag)
 
