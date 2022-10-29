@@ -6,9 +6,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(WIN32)
-    find_package(Python 3.6 COMPONENTS Development REQUIRED)
+    find_package(Python 3.9 COMPONENTS Development REQUIRED)
 else()
-    find_package(Python 3.7 COMPONENTS Development REQUIRED)
+    find_package(Python 3.9 COMPONENTS Development REQUIRED)
 endif()
 add_subdirectory(pybind11)
 
@@ -16,11 +16,11 @@ option(DIFFVG_CUDA "Build diffvg with GPU code path?" ON)
 
 if(DIFFVG_CUDA)
     message(STATUS "Build with CUDA support")
-    find_package(CUDA 10 REQUIRED)
+    find_package(CUDA 11 REQUIRED)
     set(CMAKE_CUDA_STANDARD 11)
     if(NOT WIN32)
         # Hack: for some reason the line above doesn't work on some Linux systems.
-        set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11")
+        set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++14")
         #set(CUDA_NVCC_FLAGS_DEBUG "-g -G")
     endif()
 else()
@@ -94,7 +94,7 @@ if(APPLE)
     # multiple Python installed. If we link a particular Python version
     # here, and we import it with a different Python version later.
     # likely a segmentation fault.
-    # The solution for Linux Mac OS machines, as mentioned in 
+    # The solution for Linux Mac OS machines, as mentioned in
     # https://github.com/pybind/pybind11/blob/master/tools/pybind11Tools.cmake
     # is to not link against Python library at all and resolve the symbols
     # at compile time.
@@ -118,7 +118,7 @@ elseif(APPLE)
     set_target_properties(diffvg PROPERTIES INSTALL_RPATH "@loader_path")
 endif()
 
-set_property(TARGET diffvg PROPERTY CXX_STANDARD 11)
+set_property(TARGET diffvg PROPERTY CXX_STANDARD 14)
 set_target_properties(diffvg PROPERTIES PREFIX "")
 # Still enable assertion in release mode
 string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
