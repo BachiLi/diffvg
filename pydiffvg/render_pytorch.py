@@ -674,7 +674,6 @@ class RenderFunction(torch.autograd.Function):
                  grad_img):
         if not grad_img.is_contiguous():
             grad_img = grad_img.contiguous()
-        assert(torch.isfinite(grad_img).all())
 
         scene = ctx.scene
         width = ctx.width
@@ -701,14 +700,14 @@ class RenderFunction(torch.autograd.Function):
                 # To print a warning to the console when the gradient is not finite, pass a sequence of length 3.
                 #   The third element is treated as a Boolean and if True, a warning is printed.
                 if type(backward_clamp_gradient_mag) is int or type(backward_clamp_gradient_mag) is float:
-                    min_: -float(abs(backward_clamp_gradient_mag))
-                    max_: +float(abs(backward_clamp_gradient_mag))
+                    min_ = -float(abs(backward_clamp_gradient_mag))
+                    max_ = +float(abs(backward_clamp_gradient_mag))
                 elif len(backward_clamp_gradient_mag) == 1:
-                    min_: -float(abs(backward_clamp_gradient_mag[0]))
-                    max_: +float(abs(backward_clamp_gradient_mag[0]))
+                    min_ = -float(abs(backward_clamp_gradient_mag[0]))
+                    max_ = +float(abs(backward_clamp_gradient_mag[0]))
                 elif len(backward_clamp_gradient_mag) >= 2:
-                    min_: -float(abs(backward_clamp_gradient_mag[0]))
-                    max_: +float(abs(backward_clamp_gradient_mag[1]))
+                    min_ = -float(abs(backward_clamp_gradient_mag[0]))
+                    max_ = +float(abs(backward_clamp_gradient_mag[1]))
                     if len(backward_clamp_gradient_mag) >= 3 and backward_clamp_gradient_mag[2]:
                         print(f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to: {min_}/{max_}')
                 backward_clamp_gradient_mag = {"min": min_, "max": max_}
