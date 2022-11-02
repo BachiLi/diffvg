@@ -832,14 +832,14 @@ class RenderFunction(torch.autograd.Function):
                     type(backward_clamp_gradient_mag) is int
                     or type(backward_clamp_gradient_mag) is float
                 ):
-                    min_: -float(abs(backward_clamp_gradient_mag))
-                    max_: +float(abs(backward_clamp_gradient_mag))
+                    min_ = -float(abs(backward_clamp_gradient_mag))
+                    max_ = +float(abs(backward_clamp_gradient_mag))
                 elif len(backward_clamp_gradient_mag) == 1:
-                    min_: -float(abs(backward_clamp_gradient_mag[0]))
-                    max_: +float(abs(backward_clamp_gradient_mag[0]))
+                    min_ = -float(abs(backward_clamp_gradient_mag[0]))
+                    max_ = +float(abs(backward_clamp_gradient_mag[0]))
                 elif len(backward_clamp_gradient_mag) >= 2:
-                    min_: -float(abs(backward_clamp_gradient_mag[0]))
-                    max_: +float(abs(backward_clamp_gradient_mag[1]))
+                    min_ = -float(abs(backward_clamp_gradient_mag[0]))
+                    max_ = +float(abs(backward_clamp_gradient_mag[1]))
                     if (
                         len(backward_clamp_gradient_mag) >= 3
                         and backward_clamp_gradient_mag[2]
