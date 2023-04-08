@@ -5,18 +5,18 @@ description = ""
 authors = ["Marco Lee <marco@goodnotesapp.com>"]
 
 [tool.poetry.dependencies]
-python = "=3.8"
+python = ">=3.8"
 pygame = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 torch = "^1.8.1"
-torchvision = "^0.9.1"
+torchvision = "^0.11.3"
 numpy = "^1.20.2"
-scikit-image = "^0.18.1"
+scikit-image = "^0.19.3"
 svgwrite = "^1.4.1"
 svgpathtools = "^1.4.1"
 cssutils = "^2.2.0"
-numba = "^0.53.1"
+numba = "^0.55.2"
 torch-tools = "^0.1.5"
 visdom = "^0.1.8"
 cmake = "^3.18.4"
