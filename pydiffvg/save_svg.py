@@ -121,6 +121,12 @@ def save_svg(filename, width, height, shapes, shape_groups, use_gamma = False):
             shape_node.set('y', str(shape.p_min[1].item()))
             shape_node.set('width', str(shape.p_max[0].item() - shape.p_min[0].item()))
             shape_node.set('height', str(shape.p_max[1].item() - shape.p_min[1].item()))
+        elif isinstance(shape, pydiffvg.Ellipse):
+            shape_node = etree.SubElement(g, 'ellipse')
+            shape_node.set('cx', str(shape.center[0].item()))
+            shape_node.set('cy', str(shape.center[1].item()))
+            shape_node.set('rx', str(shape.radius[0].item()))
+            shape_node.set('ry', str(shape.radius[1].item()))
         else:
             assert(False)
 
