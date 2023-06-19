@@ -5,6 +5,8 @@ project(diffvg VERSION 0.0.1 DESCRIPTION "Differentiable Vector Graphics")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+
 if(WIN32)
     find_package(Python 3.6 COMPONENTS Development REQUIRED)
 else()
@@ -51,6 +53,9 @@ endif()
 if(NOT DIFFVG_CUDA)
     add_compile_options("-DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CPP")
 endif()
+
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 set(SRCS atomic.h
          color.h
@@ -118,7 +123,7 @@ elseif(APPLE)
     set_target_properties(diffvg PROPERTIES INSTALL_RPATH "@loader_path")
 endif()
 
-set_property(TARGET diffvg PROPERTY CXX_STANDARD 11)
+set_property(TARGET diffvg PROPERTY CXX_STANDARD 14)
 set_target_properties(diffvg PROPERTIES PREFIX "")
 # Still enable assertion in release mode
 string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -130,11 +135,11 @@ string( REPLACE "-DNDEBUG" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}"
 string( REPLACE "/DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 string( REPLACE "-DNDEBUG" "" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 
-if(NOT WIN32)
-    find_package(TensorFlow)
-    if(TensorFlow_FOUND)
-        add_subdirectory(pydiffvg_tensorflow/custom_ops)
-    else()
-        message(INFO " Building without TensorFlow support (not found)")
-    endif()
-endif()
+# if(NOT WIN32)
+#     find_package(TensorFlow)
+#     if(TensorFlow_FOUND)
+#         add_subdirectory(pydiffvg_tensorflow/custom_ops)
+#     else()
+#         message(INFO " Building without TensorFlow support (not found)")
+#     endif()
+# endif()
