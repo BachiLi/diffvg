@@ -12,7 +12,7 @@ import time
 
 
 def render(canvas_width, canvas_height, shapes, shape_groups, samples=2,
-           seed=None):
+           seed=None, backward_clamp_gradient_mag=None):
     if seed is None:
         seed = random.randint(0, 1000000)
     _render = pydiffvg.RenderFunction.apply
@@ -21,6 +21,7 @@ def render(canvas_width, canvas_height, shapes, shape_groups, samples=2,
     img = _render(canvas_width, canvas_height, samples, samples,
                   seed,   # seed
                   None,  # background image
+                  backward_clamp_gradient_mag,
                   *scene_args)
     return img
 

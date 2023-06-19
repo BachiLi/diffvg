@@ -81,7 +81,7 @@ class RenderFunction(torch.autograd.Function):
                 else:
                     args.append(torch.zeros(shape.points.shape[0] - 1, dtype = torch.int32))
                 args.append(shape.points.cpu())
-                args.append(None)  
+                args.append(None)
                 args.append(shape.is_closed)
                 args.append(False) # use_distance_approx
             elif isinstance(shape, pydiffvg.Rect):
@@ -179,6 +179,7 @@ class RenderFunction(torch.autograd.Function):
                 num_samples_y,
                 seed,
                 background_image,
+                backward_clamp_gradient_mag,
                 *args):
         """
             Forward rendering pass.
@@ -375,7 +376,7 @@ class RenderFunction(torch.autograd.Function):
             assert(eval_positions.shape[0] == 0)
             rendered_image = torch.zeros(height, width, 4, device = pydiffvg.get_device())
         else:
-            assert(output_type == OutputType.sdf)          
+            assert(output_type == OutputType.sdf)
             if eval_positions.shape[0] == 0:
                 rendered_image = torch.zeros(height, width, 1, device = pydiffvg.get_device())
             else:
@@ -425,6 +426,7 @@ class RenderFunction(torch.autograd.Function):
         ctx.output_type = output_type
         ctx.use_prefiltering = use_prefiltering
         ctx.eval_positions = eval_positions
+        ctx.backward_clamp_gradient_mag = backward_clamp_gradient_mag
         return rendered_image
 
     @staticmethod
@@ -455,7 +457,7 @@ class RenderFunction(torch.autograd.Function):
         use_prefiltering = args[current_index]
         current_index += 1
         eval_positions = args[current_index]
-        current_index += 1        
+        current_index += 1
         shapes = []
         shape_groups = []
         shape_contents = [] # Important to avoid GC deleting the shapes
@@ -670,7 +672,6 @@ class RenderFunction(torch.autograd.Function):
                  grad_img):
         if not grad_img.is_contiguous():
             grad_img = grad_img.contiguous()
-        assert(torch.isfinite(grad_img).all())
 
         scene = ctx.scene
         width = ctx.width
@@ -682,6 +683,33 @@ class RenderFunction(torch.autograd.Function):
         use_prefiltering = ctx.use_prefiltering
         eval_positions = ctx.eval_positions
         background_image = ctx.background_image
+        backward_clamp_gradient_mag = ctx.backward_clamp_gradient_mag
+
+        if backward_clamp_gradient_mag is None:
+            assert torch.isfinite(grad_img).all()
+        else:
+            try:
+                assert torch.isfinite(grad_img).all()
+            except:
+                # backward_clamp_gradient_mag can be:
+                # - A single float or int defining the magnitude of the clamp in both directions
+                # - A sequence of at least one or two floats or ints defining the magnitude
+                #   of the clamp in the min (element 0) and max (element 1, or element 0 if only one element) direction
+                # To print a warning to the console when the gradient is not finite, pass a sequence of length 3.
+                #   The third element is treated as a Boolean and if True, a warning is printed.
+                if type(backward_clamp_gradient_mag) is int or type(backward_clamp_gradient_mag) is float:
+                    min_ = -float(abs(backward_clamp_gradient_mag))
+                    max_ = +float(abs(backward_clamp_gradient_mag))
+                elif len(backward_clamp_gradient_mag) == 1:
+                    min_ = -float(abs(backward_clamp_gradient_mag[0]))
+                    max_ = +float(abs(backward_clamp_gradient_mag[0]))
+                elif len(backward_clamp_gradient_mag) >= 2:
+                    min_ = -float(abs(backward_clamp_gradient_mag[0]))
+                    max_ = +float(abs(backward_clamp_gradient_mag[1]))
+                    if len(backward_clamp_gradient_mag) >= 3 and backward_clamp_gradient_mag[2]:
+                        print(f'Pydiffvg::backward "isfinite" assertion failed: clamping gradient to: {min_}/{max_}')
+                backward_clamp_gradient_mag = {"min": min_, "max": max_}
+                grad_img = torch.clamp(grad_img, **backward_clamp_gradient_mag)
 
         if background_image is not None:
             d_background_image = torch.zeros_like(background_image)
@@ -717,6 +745,7 @@ class RenderFunction(torch.autograd.Function):
         d_args.append(None) # num_samples_y
         d_args.append(None) # seed
         d_args.append(d_background_image)
+        d_args.append(None) # backward_clamp_gradient_mag
         d_args.append(None) # canvas_width
         d_args.append(None) # canvas_height
         d_args.append(None) # num_shapes

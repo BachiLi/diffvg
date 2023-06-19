@@ -47,7 +47,7 @@ def _onehot(label):
     return label_onehot.float()
 
 
-def render(canvas_width, canvas_height, shapes, shape_groups, samples=2):
+def render(canvas_width, canvas_height, shapes, shape_groups, samples=2, backward_clamp_gradient_mag=None):
     _render = pydiffvg.RenderFunction.apply
     scene_args = pydiffvg.RenderFunction.serialize_scene(
         canvas_width, canvas_height, shapes, shape_groups)
@@ -55,8 +55,9 @@ def render(canvas_width, canvas_height, shapes, shape_groups, samples=2):
                   canvas_height,
                   samples,
                   samples,
-                  0,
-                  None,
+                  0, # seed
+                  None, # background_image
+                  backward_clamp_gradient_mag,
                   *scene_args)
     return img
 
