@@ -1,0 +1,16 @@
+name: diffvg
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - cudatoolkit=11.3
+  - pytorch=1.12
+  - torchvision=0.13
+  - numpy
+  - scikit-image
+  - cmake
+  - ffmpeg
+  - pip
+prefix: C:\Users\ABC\.conda\envs\diffvg

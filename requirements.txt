@@ -1,0 +1,6 @@
+svgwrite
+svgpathtools
+cssutils
+numba
+torch-tools
+visdom
