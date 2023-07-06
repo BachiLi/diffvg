@@ -32,13 +32,17 @@ def run_iter(n):
     
 
 
-nn = [4, 6, 8]
+nn = [1, 2, 3, 4]
 yy = []
-for n in nn:
-    start = time.time()
-    results = Parallel(n_jobs=n)(delayed(run_iter)(k) for k in range(n))
-    yy.append(int((time.time()-start)/n))
-    print(n)
+# for n in nn:
+n=2
+import torch
+# Fuck it, I'll parallelize using batches
+torch.cuda.empty_cache()
+start = time.time()
+results = Parallel(n_jobs=n)(delayed(run_iter)(k) for k in range(n))
+yy.append(int((time.time()-start)/n))
+print(n, yy)
 
 fig = go.Figure(go.Scatter(x=nn ,y=yy))
 fig.show()
