@@ -180,6 +180,8 @@ class TimeCounter:
 batch_size = 10
 num_iters = 300
 items = os.listdir('../../../OneDrive/data/')
+print(len(items))
+assert False
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
 for done_item in os.listdir("results/db"):
