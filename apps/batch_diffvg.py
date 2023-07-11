@@ -21,13 +21,10 @@ class PathOptimizer:
         self.perception_loss = ttools.modules.LPIPS().to(self.device)
         self.render = pydiffvg.RenderFunction.apply
     
-    def load_targets(self, target_paths, imsize=512, gamma=1.):
+    def load_targets(self, target_paths, imsize=256, gamma=1.):
         targets = []
         for targetpath in target_paths:
-            target = skimage.io.imread(targetpath)
-            if imsize!=0:
-                skimage.transform.resize(target, (imsize, imsize))
-            
+            target = skimage.io.imread(targetpath)            
             target = torch.from_numpy(target).to(torch.float32) / 255.0
             target = target.pow(gamma)
             target = target.to(self.device)
@@ -68,15 +65,6 @@ class PathOptimizer:
                     points.append(p3)
                     p0 = p3
                 points = torch.tensor(points)
-        for t in range(num_iters):
-            path_optimizer.run_iter(t, num_iters)
-
-        for b, name in enumerate(batch_names):
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name}', gamma=gamma)
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name[:-3]}.svg', gamma=gamma)
-
-        
-
                 points[:, 0] *= self.canvas_width
                 points[:, 1] *= self.canvas_height
                 path = pydiffvg.Path(num_control_points = num_control_points,
@@ -134,9 +122,6 @@ class PathOptimizer:
         
         # Compose img with white background
         images = images[:, :, :, 3:4] * images[:, :, :, :3] + torch.ones(images.shape[0], images.shape[1], images.shape[2], 3, device = pydiffvg.get_device()) * (1 - images[:, :, :, 3:4])
-        
-        if t == num_iters-1:
-            self.images = images
 
         images = images.permute(0, 3, 1, 2) # NHWC -> NCHW
 
@@ -157,6 +142,24 @@ class PathOptimizer:
                 path.stroke_width.data.clamp_(1.0, self.max_width)  
             for group in self.shape_groups_list[k]:
                 group.stroke_color.data.clamp_(0.0, 1.0)
+
+    def build_images(imsize=512):
+        images = []
+        for k in range(self.targets.shape[0]):
+            scene_args = pydiffvg.RenderFunction.serialize_scene(\
+                imsize, imsize,
+                self.shapes_list[k],
+                self.shape_groups_list[k]
+                )
+            img = self.render(imsize, imsize, 2, 2, t, None, *scene_args)
+            images.append(img.unsqueeze(0))
+        
+        images = torch.cat(images,0)
+        
+        # Compose img with white background
+        images = images[:, :, :, 3:4] * images[:, :, :, :3] + torch.ones(images.shape[0], images.shape[1], images.shape[2], 3, device = pydiffvg.get_device()) * (1 - images[:, :, :, 3:4])
+        self.images = images
+
 
 
 class TimeCounter:
@@ -180,8 +183,7 @@ class TimeCounter:
 batch_size = 10
 num_iters = 300
 items = os.listdir('../../../OneDrive/data/')
-print(len(items))
-assert False
+items = items[:5]
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
 for done_item in os.listdir("results/db"):
@@ -212,6 +214,7 @@ for i, item in enumerate(items):
         for t in range(num_iters):
             path_optimizer.run_iter(t, num_iters)
 
+        path_optimizer.build_images()
         for b, name in enumerate(batch_names):
             pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name}', gamma=gamma)
             pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name[:-3]}svg', gamma=gamma)
