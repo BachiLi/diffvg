@@ -4,10 +4,11 @@ import skimage
 import skimage.io
 import random
 import ttools.modules
-import argparse
 import math
 from utils import printProgressBar
 import time
+import datetime
+import os
 
 # pydiffvg.set_print_timing(True)
 
@@ -20,7 +21,7 @@ class PathOptimizer:
         self.perception_loss = ttools.modules.LPIPS().to(self.device)
         self.render = pydiffvg.RenderFunction.apply
     
-    def load_targets(self, target_paths, imsize=0, gamma=1.):
+    def load_targets(self, target_paths, imsize=512, gamma=1.):
         targets = []
         for targetpath in target_paths:
             target = skimage.io.imread(targetpath)
@@ -32,7 +33,7 @@ class PathOptimizer:
             target = target.to(self.device)
             target = target.unsqueeze(0)
             target = target.permute(0, 3, 1, 2)
-            target = torch.nn.functional.interpolate(target, size = [256, 256], mode = 'area')
+            target = torch.nn.functional.interpolate(target, size = [imsize, imsize], mode = 'area')
             targets.append(target)
         
         self.targets = torch.cat(targets, 0)
@@ -67,6 +68,15 @@ class PathOptimizer:
                     points.append(p3)
                     p0 = p3
                 points = torch.tensor(points)
+        for t in range(num_iters):
+            path_optimizer.run_iter(t, num_iters)
+
+        for b, name in enumerate(batch_names):
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name}', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name[:-3]}.svg', gamma=gamma)
+
+        
+
                 points[:, 0] *= self.canvas_width
                 points[:, 1] *= self.canvas_height
                 path = pydiffvg.Path(num_control_points = num_control_points,
@@ -85,15 +95,6 @@ class PathOptimizer:
             scene_args = pydiffvg.RenderFunction.serialize_scene(\
                 self.canvas_width, self.canvas_height, shapes, shape_groups)
             
-            # self.render = pydiffvg.RenderFunction.apply
-            # img = self.render(self.canvas_width, # width
-            #             self.canvas_height, # height
-            #             2,   # num_samples_x
-            #             2,   # num_samples_y
-            #             0,   # seed
-            #             None,
-            #             *scene_args)
-
             
             for path in shapes:
                 path.points.requires_grad = True
@@ -114,7 +115,7 @@ class PathOptimizer:
         self.width_optim = torch.optim.Adam(self.stroke_width_vars, lr=0.1)
         self.color_optim = torch.optim.Adam(self.color_vars, lr=0.01)
 
-    def run_iter(self, t):
+    def run_iter(self, t, num_iters):
         self.points_optim.zero_grad()
         self.width_optim.zero_grad()
         self.color_optim.zero_grad()
@@ -134,13 +135,12 @@ class PathOptimizer:
         # Compose img with white background
         images = images[:, :, :, 3:4] * images[:, :, :, :3] + torch.ones(images.shape[0], images.shape[1], images.shape[2], 3, device = pydiffvg.get_device()) * (1 - images[:, :, :, 3:4])
         
-
-        self.images = images
+        if t == num_iters-1:
+            self.images = images
 
         images = images.permute(0, 3, 1, 2) # NHWC -> NCHW
 
         loss = 0
-        # if args.use_lpips_loss:
         loss += 0.4*self.perception_loss(images, self.targets) + (images.mean() - self.targets.mean()).pow(2)
         loss += 0.6*(images - self.targets).pow(2).mean()
     
@@ -159,38 +159,59 @@ class PathOptimizer:
                 group.stroke_color.data.clamp_(0.0, 1.0)
 
 
+class TimeCounter:
+    def __init__(self, I, N):
+        self.start = time.time()
+        self.I = I
+        self.N = N
 
-def main(args):
+    def estimate(self, i, n):
+        if i+n>0:
+            secs = int(time.time()-global_start)
+            completed = (i*self.N+n)/(self.N*self.I)
+            estimation = int(secs*(1-completed)/completed)
+            print(f"""
+                Completed {'{0:.1%}'.format(completed)}
+                Elapsed time: {datetime.timedelta(seconds=secs)}.
+                Estimated remain: {datetime.timedelta(seconds=estimation)}
+            """)
+
+
+batch_size = 10
+num_iters = 300
+items = os.listdir('../../../OneDrive/data/')
+global_start = time.time()
+time_counter = TimeCounter(len(items), 1000//batch_size)
+for done_item in os.listdir("results/db"):
+    if done_item in items:
+        items.remove(done_item)
+print(items)
+
+
+for i, item in enumerate(items):
+    os.makedirs(f'results/db/{item}/', exist_ok=True)
+    folder = f'../../../OneDrive/data/{item}'
+    img_names = os.listdir(folder)
+
+    n_batches = math.ceil(len(img_names)/batch_size)
+    for n in range(n_batches):
+
+        time_counter.estimate(i, n)
+
+        batch_names = img_names[n*batch_size:min(len(img_names),(n+1)*batch_size)]
+        target_paths = [f"{folder}/{name}" for name in batch_names]
+
     
-    start = time.time()
-    path_optimizer = PathOptimizer()
-    path_optimizer.load_targets(['imgs/stdiff_an_ornate_lamp.jpg'])
-    path_optimizer.initialize(256, 8)
-    
-    # Adam iterations.
-    for t in range(100):
-        path_optimizer.run_iter(t)
+        path_optimizer = PathOptimizer()
+        path_optimizer.load_targets(target_paths)
+        path_optimizer.initialize(256, 8)
+        
+        # Adam iterations.
+        for t in range(num_iters):
+            path_optimizer.run_iter(t, num_iters)
 
-    print(int(time.time()-start))
-    
-    pydiffvg.imwrite(path_optimizer.images[0].cpu(), 'results/db/001.png', gamma=gamma)
-    pydiffvg.imwrite(path_optimizer.images[1].cpu(), 'results/db/002.png', gamma=gamma)
-    pydiffvg.imwrite(path_optimizer.images[2].cpu(), 'results/db/003.png', gamma=gamma)
-    pydiffvg.imwrite(path_optimizer.images[3].cpu(), 'results/db/004.png', gamma=gamma)
+        for b, name in enumerate(batch_names):
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name}', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name[:-3]}svg', gamma=gamma)
 
-        # printProgressBar(t + 1, args.num_iter, loss.item())
-    
-    # print(f"Elapsed time: {int(time.time()-start)}s")
-
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--target", help="target image path")
-    parser.add_argument("--num_paths", type=int, default=512)
-    parser.add_argument("--max_width", type=float, default=2.0)
-    parser.add_argument("--use_lpips_loss", dest='use_lpips_loss', action='store_true')
-    parser.add_argument("--num_iter", type=int, default=500)
-    parser.add_argument("--use_blob", dest='use_blob', action='store_true')
-    args = parser.parse_args()
-    main(args)
+        
