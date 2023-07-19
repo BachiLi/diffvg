@@ -21,7 +21,7 @@ class PathOptimizer:
         self.perception_loss = ttools.modules.LPIPS().to(self.device)
         self.render = pydiffvg.RenderFunction.apply
     
-    def load_targets(self, target_paths, imsize=256, gamma=1.):
+    def load_targets(self, target_paths, imsize=512, gamma=1.):
         targets = []
         for targetpath in target_paths:
             target = skimage.io.imread(targetpath)            
@@ -143,7 +143,7 @@ class PathOptimizer:
             for group in self.shape_groups_list[k]:
                 group.stroke_color.data.clamp_(0.0, 1.0)
 
-    def build_images(imsize=512):
+    def build_images(self, imsize=512):
         images = []
         for k in range(self.targets.shape[0]):
             scene_args = pydiffvg.RenderFunction.serialize_scene(\
@@ -181,14 +181,14 @@ class TimeCounter:
 
 
 batch_size = 10
-num_iters = 300
+num_iters = 200
 items = os.listdir('../../../OneDrive/data/')
-items = items[:5]
+items = items[35:40]
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
-for done_item in os.listdir("results/db"):
-    if done_item in items:
-        items.remove(done_item)
+# for done_item in os.listdir("results/db"):
+#     if done_item in items:
+#         items.remove(done_item)
 print(items)
 
 
