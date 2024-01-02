@@ -21,15 +21,21 @@ import time
 
 gamma = 1.0
 
-def main(args):
-    start = time.time()
+def main(args, targetpath, savepath):
+    # start = time.time()
     # Use GPU if available
     pydiffvg.set_use_gpu(torch.cuda.is_available())
     
     perception_loss = ttools.modules.LPIPS().to(pydiffvg.get_device())
     
     #target = torch.from_numpy(skimage.io.imread('imgs/lena.png')).to(torch.float32) / 255.0
-    target = torch.from_numpy(skimage.io.imread(args.target)).to(torch.float32) / 255.0
+    target = skimage.io.imread(targetpath)
+    # print(target.shape, target)
+    if args.imsize != 0:
+        target = skimage.transform.resize(target, (args.imsize, args.imsize), anti_aliasing=False)
+        pydiffvg.imwrite(target, savepath, gamma=gamma)
+    # print(target.shape, target)
+    target = torch.from_numpy(target).to(torch.float32) / 255.0
     target = target.pow(gamma)
     target = target.to(pydiffvg.get_device())
     target = target.unsqueeze(0)
@@ -133,15 +139,21 @@ def main(args):
         img = img[:, :, 3:4] * img[:, :, :3] + torch.ones(img.shape[0], img.shape[1], 3, device = pydiffvg.get_device()) * (1 - img[:, :, 3:4])
         # Save the intermediate render.
         if t == args.num_iter - 1:
-            pydiffvg.imwrite(img.cpu(), 'results/painterly_rendering/{}_{}.png'.format(args.target.split('/')[-1].split('.')[0],args.num_paths), gamma=gamma)
+            # pydiffvg.imwrite(img.cpu(), 'results/cicada_db/{}_{}.png'.format(args.target.split('/')[-1].split('.')[0],args.num_paths), gamma=gamma)
+            pydiffvg.imwrite(img.cpu(), savepath, gamma=gamma)
+
         img = img[:, :, :3]
         # Convert img from HWC to NCHW
         img = img.unsqueeze(0)
         img = img.permute(0, 3, 1, 2) # NHWC -> NCHW
-        if args.use_lpips_loss:
-            loss = perception_loss(img, target) + (img.mean() - target.mean()).pow(2)
-        else:
-            loss = (img - target).pow(2).mean()
+        loss = 0
+        # if args.use_lpips_loss:
+        loss += 0.4*perception_loss(img, target) + (img.mean() - target.mean()).pow(2)
+        # if t == 100:
+        #     print(perception_loss(img, target) + (img.mean() - target.mean()).pow(2), (img - target).pow(2).mean())
+        #     assert False
+        # else:
+        loss += 0.6*(img - target).pow(2).mean()
     
         # Backpropagate the gradients.
         loss.backward()
@@ -161,9 +173,9 @@ def main(args):
             for group in shape_groups:
                 group.stroke_color.data.clamp_(0.0, 1.0)
 
-        printProgressBar(t + 1, args.num_iter, loss.item())
+        # printProgressBar(t + 1, args.num_iter, loss.item())
     
-    print(f"Elapsed time: {int(time.time()-start)}s")
+    # print(f"Elapsed time: {int(time.time()-start)}s")
 
 
 
