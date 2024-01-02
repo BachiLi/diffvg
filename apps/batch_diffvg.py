@@ -189,6 +189,7 @@ time_counter = TimeCounter(len(items), 1000//batch_size)
 # for done_item in os.listdir("results/db"):
 #     if done_item in items:
 #         items.remove(done_item)
+items = ["Ceiling_fan", "Cutlery", "DVD_player"]
 print(items)
 
 
