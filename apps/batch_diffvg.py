@@ -26,7 +26,7 @@ class PathOptimizer:
         self.perception_loss = ttools.modules.LPIPS().to(self.device)
         self.render = pydiffvg.RenderFunction.apply
     
-    def load_targets(self, target_paths, imsize=256, gamma=1.):
+    def load_targets(self, target_paths, imsize=512, gamma=1.):
         targets = []
         for targetpath in target_paths:
             target = skimage.io.imread(targetpath)            
