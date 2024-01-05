@@ -14,10 +14,15 @@ import os
 
 gamma = 1.0
 
+
+print("Using CUDA: ", torch.cuda.is_available())
+torch.cuda.set_device(1)
+
 class PathOptimizer:
     def __init__(self):
         pydiffvg.set_use_gpu(torch.cuda.is_available())
         self.device = pydiffvg.get_device()
+        print(self.device)
         self.perception_loss = ttools.modules.LPIPS().to(self.device)
         self.render = pydiffvg.RenderFunction.apply
     
@@ -103,7 +108,7 @@ class PathOptimizer:
         self.width_optim = torch.optim.Adam(self.stroke_width_vars, lr=0.1)
         self.color_optim = torch.optim.Adam(self.color_vars, lr=0.01)
 
-    def run_iter(self, t, num_iters):
+    def run_iter(self, t):
         self.points_optim.zero_grad()
         self.width_optim.zero_grad()
         self.color_optim.zero_grad()
@@ -145,7 +150,11 @@ class PathOptimizer:
 
     def build_images(self, imsize=512):
         images = []
+        imscale = imsize/self.targets.shape[2]
         for k in range(self.targets.shape[0]):
+            for m in range(len(self.shapes_list[k])):
+                self.shapes_list[k][m].points = imscale*self.shapes_list[k][m].points
+                self.shapes_list[k][m].stroke_width = imscale*self.shapes_list[k][m].stroke_width
             scene_args = pydiffvg.RenderFunction.serialize_scene(\
                 imsize, imsize,
                 self.shapes_list[k],
@@ -182,20 +191,19 @@ class TimeCounter:
 
 batch_size = 10
 num_iters = 200
-items = os.listdir('../../../OneDrive/data/')
-items = items[35:40]
+items = os.listdir('../../../data_cropped/')
+# items = items[15:]
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
 # for done_item in os.listdir("results/db"):
 #     if done_item in items:
 #         items.remove(done_item)
-items = ["Ceiling_fan", "Cutlery", "DVD_player"]
 print(items)
 
 
 for i, item in enumerate(items):
-    os.makedirs(f'results/db/{item}/', exist_ok=True)
-    folder = f'../../../OneDrive/data/{item}'
+    os.makedirs(f'results/db_cropped/{item}/', exist_ok=True)
+    folder = f'../../../data_cropped/{item}'
     img_names = os.listdir(folder)
 
     n_batches = math.ceil(len(img_names)/batch_size)
@@ -208,16 +216,16 @@ for i, item in enumerate(items):
 
     
         path_optimizer = PathOptimizer()
-        path_optimizer.load_targets(target_paths)
+        path_optimizer.load_targets(target_paths, imsize=256)
         path_optimizer.initialize(256, 8)
         
         # Adam iterations.
         for t in range(num_iters):
-            path_optimizer.run_iter(t, num_iters)
+            path_optimizer.run_iter(t)
 
-        path_optimizer.build_images()
+        path_optimizer.build_images(imsize=512)
         for b, name in enumerate(batch_names):
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name}', gamma=gamma)
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db/{item}/{name[:-3]}svg', gamma=gamma)
-
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db_cropped/{item}/{name}', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db_cropped/{item}/{name[:-3]}svg', gamma=gamma)
+        
         
