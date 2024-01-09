@@ -9,6 +9,11 @@ from utils import printProgressBar
 import time
 import datetime
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+db_path_cropped = os.environ.get("DB_PATH_CROPPED")
+svg_path = os.environ.get("SVG_PATH")
 
 # pydiffvg.set_print_timing(True)
 
@@ -191,19 +196,20 @@ class TimeCounter:
 
 batch_size = 10
 num_iters = 200
-items = os.listdir('../../../data_cropped/')
+items = os.listdir(db_path_cropped)
 # items = items[15:]
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
 # for done_item in os.listdir("results/db"):
 #     if done_item in items:
 #         items.remove(done_item)
+items.reverse()
 print(items)
 
 
 for i, item in enumerate(items):
-    os.makedirs(f'results/db_cropped/{item}/', exist_ok=True)
-    folder = f'../../../data_cropped/{item}'
+    os.makedirs(f'{svg_path}/{item}/', exist_ok=True)
+    folder = f'{db_path_cropped}/{item}'
     img_names = os.listdir(folder)
 
     n_batches = math.ceil(len(img_names)/batch_size)
@@ -213,7 +219,6 @@ for i, item in enumerate(items):
 
         batch_names = img_names[n*batch_size:min(len(img_names),(n+1)*batch_size)]
         target_paths = [f"{folder}/{name}" for name in batch_names]
-
     
         path_optimizer = PathOptimizer()
         path_optimizer.load_targets(target_paths, imsize=256)
@@ -225,7 +230,7 @@ for i, item in enumerate(items):
 
         path_optimizer.build_images(imsize=512)
         for b, name in enumerate(batch_names):
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db_cropped/{item}/{name}', gamma=gamma)
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'results/db_cropped/{item}/{name[:-3]}svg', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'{svg_path}/{item}/{name}', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'{svg_path}/{item}/{name[:-3]}svg', gamma=gamma)
         
         
