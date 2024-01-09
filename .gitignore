@@ -9,3 +9,4 @@ dist
 __pycache__
 .DS_Store
 olds/
+*.env
