@@ -10,3 +10,4 @@ __pycache__
 .DS_Store
 olds/
 *.env
+aux_data/
