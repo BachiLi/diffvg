@@ -21,7 +21,7 @@ gamma = 1.0
 
 
 print("Using CUDA: ", torch.cuda.is_available())
-torch.cuda.set_device(1)
+# torch.cuda.set_device(1)
 
 class PathOptimizer:
     def __init__(self):
@@ -197,15 +197,16 @@ class TimeCounter:
 batch_size = 10
 num_iters = 200
 items = os.listdir(db_path_cropped)
-# items = items[15:]
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
-# for done_item in os.listdir("results/db"):
-#     if done_item in items:
-#         items.remove(done_item)
 items.reverse()
-print(items)
 
+#remove some items from list
+with open("../aux_data/exclude_items.txt","r") as f:
+    line = f.readline()
+    f.close()
+
+items = [item for item in items if item not in line.split(' ')]
 
 for i, item in enumerate(items):
     os.makedirs(f'{svg_path}/{item}/', exist_ok=True)
