@@ -10,6 +10,12 @@ import time
 import datetime
 import os
 from dotenv import load_dotenv
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--n_batch", type=int, default=0)
+parser.add_argument("--num_batches", type=int, default=1)
+args = parser.parse_args()
 
 load_dotenv()
 db_path = os.environ.get("DB_PATH")
@@ -19,7 +25,8 @@ gamma = 1.0
 
 
 print("Using CUDA: ", torch.cuda.is_available())
-# torch.cuda.set_device(1)
+torch.cuda.set_device(args.n_batch)
+print(f"on device {torch.cuda.current_device()}")
 
 class PathOptimizer:
     def __init__(self):
@@ -192,9 +199,11 @@ class TimeCounter:
             """)
 
 
-batch_size = 10
+batch_size = 5
 num_iters = 400
 items = os.listdir(db_path)
+items.sort()
+items = items[(args.n_batch*len(items))//args.num_batches : min(len(items), ((args.n_batch+1)*len(items))//args.num_batches)]
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
 
