@@ -11,3 +11,4 @@ __pycache__
 olds/
 *.env
 aux_data/
+fashion-dataset/

@@ -12,10 +12,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-db_path_cropped = os.environ.get("DB_PATH_CROPPED")
-svg_path = os.environ.get("SVG_PATH")
-
-# pydiffvg.set_print_timing(True)
+db_path = os.environ.get("DB_PATH")
+out_path = os.environ.get("SVG_PATH")
 
 gamma = 1.0
 
@@ -195,22 +193,13 @@ class TimeCounter:
 
 
 batch_size = 10
-num_iters = 200
-items = os.listdir(db_path_cropped)
+num_iters = 400
+items = os.listdir(db_path)
 global_start = time.time()
 time_counter = TimeCounter(len(items), 1000//batch_size)
-items.reverse()
-
-#remove some items from list
-with open("../aux_data/exclude_items.txt","r") as f:
-    line = f.readline()
-    f.close()
-
-items = [item for item in items if item not in line.split(' ')]
 
 for i, item in enumerate(items):
-    os.makedirs(f'{svg_path}/{item}/', exist_ok=True)
-    folder = f'{db_path_cropped}/{item}'
+    folder = f'{db_path}'
     img_names = os.listdir(folder)
 
     n_batches = math.ceil(len(img_names)/batch_size)
@@ -231,7 +220,7 @@ for i, item in enumerate(items):
 
         path_optimizer.build_images(imsize=512)
         for b, name in enumerate(batch_names):
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'{svg_path}/{item}/{name}', gamma=gamma)
-            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'{svg_path}/{item}/{name[:-3]}svg', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'{out_path}/{name}', gamma=gamma)
+            pydiffvg.imwrite(path_optimizer.images[b].cpu(), f'{out_path}/{name[:-3]}svg', gamma=gamma)
         
         
