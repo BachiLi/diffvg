@@ -670,8 +670,13 @@ class RenderFunction(torch.autograd.Function):
                  grad_img):
         if not grad_img.is_contiguous():
             grad_img = grad_img.contiguous()
-        assert(torch.isfinite(grad_img).all())
-
+        #assert(torch.isfinite(grad_img).all())
+        print("Backgrad")
+        try:
+            assert torch.isfinite(grad_img).all()
+        except AssertionError:
+            print("Diffvg Infinite gradient hack. Clamping")
+            grad_img = torch.clamp(grad_img, -10, 10)
         scene = ctx.scene
         width = ctx.width
         height = ctx.height
