@@ -330,6 +330,9 @@ def parse_common_attrib(node, transform, fill_color, defs):
             stroke_width = stroke_width[:-2]
         stroke_width = torch.tensor(float(stroke_width) / 2.0)
 
+    if 'stroke-opacity' in attribs:
+        stroke_color[3] = torch.tensor(float(attribs['stroke-opacity']))
+
     if 'style' in attribs:
         style = parse_style(attribs['style'], defs)
         if 'fill' in style:
