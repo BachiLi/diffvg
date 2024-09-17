@@ -1017,7 +1017,7 @@ class OptimizableSvg:
             if issubclass(item.__class__,OptimizableSvg.SvgNode):
                 item.zero_grad()
 
-    def render(self,scale=None,seed=0):
+    def render(self,scale=None,seed=0,backward_clamp_gradient_mag=None):
         #render at native resolution
         scene = self.build_scene()
         scene_args = pydiffvg.RenderFunction.serialize_scene(*scene)
@@ -1029,6 +1029,7 @@ class OptimizableSvg:
                      2,  # num_samples_y
                      seed,  # seed
                      None, # background_image
+                     backward_clamp_gradient_mag,
                      *scene_args)
         return img
 
