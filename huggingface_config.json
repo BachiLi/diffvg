@@ -1,0 +1,23 @@
+{
+  "model": "diffvg",
+  "version": "0.1.0",
+  "entry_point": "single_circle.py",
+  "dependencies": [
+    "torch",
+    "torchvision",
+    "numpy",
+    "scikit-image",
+    "svgwrite",
+    "svgpathtools",
+    "cssutils",
+    "numba",
+    "torch-tools",
+    "visdom",
+    "cmake",
+    "ffmpeg"
+  ],
+  "environment": {
+    "python_version": "3.8",
+    "os": "linux"
+  }
+}

@@ -138,6 +138,24 @@ For the GAN models, see `apps/generative_models/train_gan.py`. Generate samples 
 
 For the VAE models, see `apps/generative_models/mnist_vae.py`.
 
+# Docker
+
+## Build Docker image
+
+To build the Docker image, run the following command:
+
+```
+docker build -t diffvg .
+```
+
+## Run Docker container
+
+To run the Docker container, use the following command:
+
+```
+docker run -it --rm diffvg
+```
+
 If you use diffvg in your academic work, please cite
 
 ```
