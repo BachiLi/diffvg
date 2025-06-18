@@ -27,7 +27,7 @@ REGISTER_OP("DataPtr")
     .Output("output: uint64")  // scalar
     .SetShapeFn([](::tensorflow::shape_inference::InferenceContext* c) {
       c->set_output(0, {}); // scalar
-      return Status::OK();
+      return Status();
     });
 
 template <typename T>
