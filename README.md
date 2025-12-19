@@ -32,6 +32,22 @@ pip install torch-tools
 pip install visdom
 python setup.py install
 ```
+## Notes for arm64 OSX
+
+```
+export ARCHFLAGS=-arch arm64
+export MACOSX_DEPLOYMENT_TARGET=$(uname -r | cut -c1-2) 
+arch -arm64 python setup.py install
+```
+## Notes for Linux CUDA 12.8 and Python 3.12
+
+```
+conda install cuda -c nvidia/label/cuda-12.8.1 -y
+conda install --override-channels -c conda-forge gcc=12.4.0 gxx=12.4.0
+#cicc is hidden in the nvvm directory
+PATH=$PATH:$PWD/../../env/nvvm/bin python setup.py install
+```
+
 # Install using poetry
 
 ## prerequisite
