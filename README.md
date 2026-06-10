@@ -32,6 +32,14 @@ pip install torch-tools
 pip install visdom
 python setup.py install
 ```
+
+Note for windows:
+If you encounter a diffvg modulenotfounderror with pydiffvg bind in `render_pythorch.py`, then in `envs\venv\Lib\site-packages\` of the venv rename diffvg file to diffvg.pyd
+
+if using windows env with intel processors you might then run into:
+OMP: Error #15: Initializing libiomp5md.dll, but found `libiomp5md.dll` already initialized.
+
+This can be fixed by removing the libiomp5md.dll file that can be found in `envs\venv\Lib\site-packages\torch\lib`
 # Install using poetry
 
 ## prerequisite
